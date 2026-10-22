@@ -146,4 +146,25 @@ public class RentalServiceTest {
                 () -> service.createContract(secondContract)
         );
     }
+
+    // Проверяем, что договор с некорректным периодом не создаётся
+    @Test
+    void testEndDateBeforeStartDate() {
+        Property property = new Property(1, "Minsk, Lenina 10");
+        Owner owner = new Owner(1, "Ivan");
+        Tenant tenant = new Tenant(1, "Petr");
+
+        // Дата окончания раньше даты начала
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new RentalContract(
+                        1,
+                        property,
+                        owner,
+                        tenant,
+                        LocalDate.of(2026, 9, 10),
+                        LocalDate.of(2026, 9, 1)
+                )
+        );
+    }
 }

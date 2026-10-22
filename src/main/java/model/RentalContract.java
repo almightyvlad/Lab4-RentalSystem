@@ -22,6 +22,18 @@ public class RentalContract {
         this.property = property;
         this.owner = owner;
         this.tenant = tenant;
+
+        // ИЗМЕНЕНИЕ 1:
+        // Проверяем, что дата окончания не раньше даты начала.
+        // isBefore() возвращает true, если endDate находится раньше startDate.
+        if (endDate.isBefore(startDate)) {
+            // ИЗМЕНЕНИЕ 2:
+            // Выбрасываем исключение, потому что такой договор некорректен.
+            throw new IllegalArgumentException(
+                    "Дата окончания договора не может быть раньше даты начала"
+            );
+        }
+
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -49,5 +61,4 @@ public class RentalContract {
     public LocalDate getEndDate() {
         return endDate;
     }
-
 }

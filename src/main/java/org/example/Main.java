@@ -1,3 +1,5 @@
+// Проверка автоматической сборки Jenkins
+
 package org.example;
 
 public class Main {

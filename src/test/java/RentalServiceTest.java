@@ -161,7 +161,7 @@ public class RentalServiceTest {
                         owner,
                         tenant,
                         LocalDate.of(2026, 10, 10),
-                        LocalDate.of(2026, 11, 1)
+                        LocalDate.of(2026, 9, 1)
                 )
         );
     }

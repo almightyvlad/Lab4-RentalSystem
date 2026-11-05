@@ -2,13 +2,20 @@ package service;
 
 import model.RentalContract;
 import repository.RentalContractRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 
 public class RentalService {
     private final RentalContractRepository repository;
 
+    private static final Logger logger = LoggerFactory.getLogger(RentalService.class);
+
     public RentalService(RentalContractRepository repository) {
         this.repository = repository;
     }
+
 
     public void createContract(RentalContract contract) {
         if (contract.getStartDate().isAfter(contract.getEndDate())) {
@@ -16,10 +23,19 @@ public class RentalService {
         }
 
         if (hasOverlappingContract(contract)) {
+            logger.warn("Property is already rented for the requested period: propertyId={}",
+                    contract.getProperty().getId());
             throw new IllegalArgumentException("Property is already rented for this period");
         }
 
-        repository.save(contract);
+        try {
+            repository.save(contract);
+        } catch (Exception exception) {
+            logger.error("Failed to save rental contract: id={}", contract.getId(), exception);
+            throw exception;
+        }
+
+        logger.info("Rental contract created: id={}", contract.getId());
     }
 
     private boolean hasOverlappingContract(RentalContract newContract) {

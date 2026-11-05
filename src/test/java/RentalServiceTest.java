@@ -1,3 +1,6 @@
+
+package service;
+
 import model.Owner;
 import model.Property;
 import model.RentalContract;
@@ -5,88 +8,57 @@ import model.Tenant;
 import org.junit.jupiter.api.Test;
 import repository.RentalContractRepository;
 import repository.RentalContractRepositoryImpl;
-import service.RentalService;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.time.LocalDate;
 
 public class RentalServiceTest {
 
     @Test
     void testCreateContract() {
+        RentalContractRepository repository = new RentalContractRepositoryImpl();
+        RentalService service = new RentalService(repository);
 
-        RentalContractRepository repository =
-                new RentalContractRepositoryImpl();
+        Property property = new Property(1, "Minsk, Lenina 10");
+        Owner owner = new Owner(1, "Ivan");
+        Tenant tenant = new Tenant(1, "Petr");
 
-        RentalService service =
-                new RentalService(repository);
-
-        Property property =
-                new Property(1, "Minsk, Lenina 10");
-
-        Owner owner =
-                new Owner(1, "Ivan");
-
-        Tenant tenant =
-                new Tenant(1, "Petr");
-
-        RentalContract contract =
-                new RentalContract(
-                        1,
-                        property,
-                        owner,
-                        tenant,
-                        LocalDate.of(2026, 9, 1),
-                        LocalDate.of(2026, 9, 10)
-                );
-
-        assertDoesNotThrow(
-                () -> service.createContract(contract)
+        RentalContract contract = new RentalContract(
+                1,
+                property,
+                owner,
+                tenant,
+                LocalDate.of(2026, 9, 1),
+                LocalDate.of(2026, 9, 10)
         );
+
+        assertDoesNotThrow(() -> service.createContract(contract));
     }
 
     @Test
     void testOverlappingPeriod() {
+        RentalContractRepository repository = new RentalContractRepositoryImpl();
+        RentalService service = new RentalService(repository);
 
-        RentalContractRepository repository =
-                new RentalContractRepositoryImpl();
+        Property property = new Property(1, "Minsk, Lenina 10");
+        Owner owner = new Owner(1, "Ivan");
+        Tenant firstTenant = new Tenant(1, "Petr");
+        Tenant secondTenant = new Tenant(2, "Alex");
 
-        RentalService service =
-                new RentalService(repository);
+        RentalContract firstContract = new RentalContract(
+                1, property, owner, firstTenant,
+                LocalDate.of(2026, 9, 1),
+                LocalDate.of(2026, 9, 10)
+        );
 
-        Property property =
-                new Property(1, "Minsk, Lenina 10");
-
-        Owner owner =
-                new Owner(1, "Ivan");
-
-        Tenant firstTenant =
-                new Tenant(1, "Petr");
-
-        Tenant secondTenant =
-                new Tenant(2, "Alex");
-
-        RentalContract firstContract =
-                new RentalContract(
-                        1,
-                        property,
-                        owner,
-                        firstTenant,
-                        LocalDate.of(2026, 9, 1),
-                        LocalDate.of(2026, 9, 10)
-                );
-
-        RentalContract secondContract =
-                new RentalContract(
-                        2,
-                        property,
-                        owner,
-                        secondTenant,
-                        LocalDate.of(2026, 9, 5),
-                        LocalDate.of(2026, 9, 15)
-                );
+        RentalContract secondContract = new RentalContract(
+                2, property, owner, secondTenant,
+                LocalDate.of(2026, 9, 5),
+                LocalDate.of(2026, 9, 15)
+        );
 
         service.createContract(firstContract);
 
@@ -98,53 +70,30 @@ public class RentalServiceTest {
 
     @Test
     void testAnotherProperty() {
+        RentalContractRepository repository = new RentalContractRepositoryImpl();
+        RentalService service = new RentalService(repository);
 
-        RentalContractRepository repository =
-                new RentalContractRepositoryImpl();
+        Property firstProperty = new Property(1, "Minsk, Lenina 10");
+        Property secondProperty = new Property(2, "Minsk, Pobediteley 20");
+        Owner owner = new Owner(1, "Ivan");
+        Tenant firstTenant = new Tenant(1, "Petr");
+        Tenant secondTenant = new Tenant(2, "Alex");
 
-        RentalService service =
-                new RentalService(repository);
+        RentalContract firstContract = new RentalContract(
+                1, firstProperty, owner, firstTenant,
+                LocalDate.of(2026, 9, 1),
+                LocalDate.of(2026, 9, 10)
+        );
 
-        Property firstProperty =
-                new Property(1, "Minsk, Lenina 10");
-
-        Property secondProperty =
-                new Property(2, "Minsk, Pobediteley 20");
-
-        Owner owner =
-                new Owner(1, "Ivan");
-
-        Tenant firstTenant =
-                new Tenant(1, "Petr");
-
-        Tenant secondTenant =
-                new Tenant(2, "Alex");
-
-        RentalContract firstContract =
-                new RentalContract(
-                        1,
-                        firstProperty,
-                        owner,
-                        firstTenant,
-                        LocalDate.of(2026, 9, 1),
-                        LocalDate.of(2026, 9, 10)
-                );
-
-        RentalContract secondContract =
-                new RentalContract(
-                        2,
-                        secondProperty,
-                        owner,
-                        secondTenant,
-                        LocalDate.of(2026, 9, 5),
-                        LocalDate.of(2026, 9, 15)
-                );
+        RentalContract secondContract = new RentalContract(
+                2, secondProperty, owner, secondTenant,
+                LocalDate.of(2026, 9, 5),
+                LocalDate.of(2026, 9, 15)
+        );
 
         service.createContract(firstContract);
 
-        assertDoesNotThrow(
-                () -> service.createContract(secondContract)
-        );
+        assertDoesNotThrow(() -> service.createContract(secondContract));
     }
 
     @Test
@@ -163,6 +112,41 @@ public class RentalServiceTest {
                         LocalDate.of(2026, 10, 10),
                         LocalDate.of(2026, 9, 1)
                 )
+        );
+    }
+
+    @Test
+    void testSaveContractError() {
+        RentalContractRepository repository = new RentalContractRepository() {
+            @Override
+            public void save(RentalContract contract) {
+                throw new RuntimeException("Database error");
+            }
+
+            @Override
+            public List<RentalContract> findByPropertyId(int propertyId) {
+                return List.of();
+            }
+        };
+
+        RentalService service = new RentalService(repository);
+
+        Property property = new Property(1, "Minsk, Lenina 10");
+        Owner owner = new Owner(1, "Ivan");
+        Tenant tenant = new Tenant(1, "Petr");
+
+        RentalContract contract = new RentalContract(
+                1,
+                property,
+                owner,
+                tenant,
+                LocalDate.of(2026, 9, 1),
+                LocalDate.of(2026, 9, 10)
+        );
+
+        assertThrows(
+                RuntimeException.class,
+                () -> service.createContract(contract)
         );
     }
 }

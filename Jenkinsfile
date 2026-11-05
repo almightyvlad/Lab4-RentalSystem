@@ -12,6 +12,12 @@ pipeline {
             }
         }
 
+        stage('Static Analysis') {
+            steps {
+                sh 'mvn checkstyle:check'
+            }
+        }
+
         stage('Test') {
             steps {
                 sh 'mvn test'

@@ -23,8 +23,7 @@ public class RentalService {
 
         if (hasOverlappingContract(contract)) {
             logger.warn("Property is already rented for the requested period: propertyId={}",
-                    contract.getProperty().getId());
-            throw new IllegalArgumentException("Property is already rented for this period");
+                    contract.getProperty().getId()); throw new IllegalArgumentException("Property is already rented for this period");
         }
 
         try {

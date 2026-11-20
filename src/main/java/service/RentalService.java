@@ -16,7 +16,6 @@ public class RentalService {
         this.repository = repository;
     }
 
-
     public void createContract(RentalContract contract) {
         if (contract.getStartDate().isAfter(contract.getEndDate())) {
             throw new IllegalArgumentException("Start date cannot be after end date");
